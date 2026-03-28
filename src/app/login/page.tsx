@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,7 +15,7 @@ import { Container } from "@/components/layout/Container";
 import { User, Activity, AlertCircle, ShoppingBag } from "lucide-react";
 
 
-export default function LoginPage() {
+function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -68,7 +69,7 @@ export default function LoginPage() {
         <CardContent className="px-8 space-y-6 pt-2">
           {searchParams.get("registered") && (
             <div className="bg-green-100 text-green-800 p-4 rounded-xl flex items-center gap-3 text-xs font-bold animate-in fade-in zoom-in duration-300">
-               Registration successful! Please login.
+              Registration successful! Please login.
             </div>
           )}
           {error && (
@@ -121,5 +122,16 @@ export default function LoginPage() {
 
       </Card>
     </Container>
+  );
+}
+
+
+
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPage />
+    </Suspense>
   );
 }
