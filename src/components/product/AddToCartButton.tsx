@@ -10,21 +10,14 @@ import { useState, useEffect } from "react";
 export function AddToCartButton({ product }: { product: any }) {
   const addItem = useCartStore((state) => state.addItem);
   const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlistStore();
-  
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const isWishlisted = mounted && wishlistItems.some((item) => item.id === product.id);
+  const isWishlisted = mounted && wishlistItems.some((item) => item === product.id);
 
   const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      image: product.image,
-      quantity: 1,
-      categorySlug: product.categorySlug
-    });
+    addItem(product.id);
   };
 
   return (
@@ -37,9 +30,9 @@ export function AddToCartButton({ product }: { product: any }) {
         <ShoppingCart className="w-5 h-5" />
         Add to Studio Cart
       </Button>
-      <Button 
-        size="icon" 
-        variant="outline" 
+      <Button
+        size="icon"
+        variant="outline"
         onClick={() => {
           if (isWishlisted) {
             removeWishlist(product.id);
