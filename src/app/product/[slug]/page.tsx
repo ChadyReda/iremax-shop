@@ -6,13 +6,11 @@ import {
   Truck,
   ShieldCheck,
   RefreshCcw,
-  ChevronRight,
   Info
 } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
 import { ProductReviews } from "@/components/product/ProductReviews";
 
@@ -23,81 +21,68 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
   if (!product) notFound();
 
   return (
-    <div className="py-12 pb-32">
+    <div className="py-8 pb-20">
       <Container>
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-12">
-          <Link href="/" className="hover:text-black transition-colors">Home</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link href={`/category/${product.category.slug}`} className="hover:text-black transition-colors">{product.category.name}</Link>
-          <ChevronRight className="w-3 h-3 text-accent" />
+        <nav className="flex items-center gap-2 text-xs text-gray-500 mb-8">
+          <Link href="/" className="hover:text-black">Home</Link>
+          <span>/</span>
+          <Link href={`/category/${product.category.slug}`} className="hover:text-black">{product.category.name}</Link>
+          <span>/</span>
           <span className="text-black">{product.title}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-          {/* Main Hero Image */}
-          <div className="space-y-6">
-            <div className="aspect-square rounded-[3rem] overflow-hidden bg-white border border-border/40 shadow-[0_40px_100px_rgba(0,0,0,0.08)] relative group">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-              />
-              <div className="absolute top-8 right-8 flex flex-col gap-2">
-                {product.isNew && <Badge className="bg-accent text-white border-none rounded-lg px-3 py-1 font-black uppercase tracking-widest text-[10px]">New Gear</Badge>}
-                {product.oldPrice && <Badge className="bg-success text-white border-none rounded-lg px-3 py-1 font-black uppercase tracking-widest text-[10px]">Special Offer</Badge>}
-              </div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="aspect-square rounded-xl overflow-hidden bg-gray-50">
+            <img
+              src={product.image}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+            {product.isNew && <Badge className="absolute top-4 left-4 bg-accent text-white text-xs font-bold px-3">New</Badge>}
           </div>
 
-          {/* Details */}
-          <div className="flex flex-col h-full">
-            <div className="space-y-8 pb-10 border-b border-border/40">
-              <div className="space-y-3">
-                <Badge variant="outline" className="text-accent border-accent font-black uppercase tracking-widest text-[10px] h-6 px-3">{product.category.name}</Badge>
-                <h1 className="text-6xl font-black uppercase tracking-tighter italic leading-[0.85]">{product.title}</h1>
+          <div className="flex flex-col">
+            <div className="space-y-4 pb-6 border-b">
+              <Badge variant="outline" className="text-accent border-accent text-xs font-bold w-fit">{product.category.name}</Badge>
+              <h1 className="text-3xl lg:text-4xl font-black uppercase">{product.title}</h1>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1 text-amber-500">
+                  <Star className="w-4 h-4 fill-amber-500" />
+                  <span className="font-bold">{product.rating}</span>
+                  <span className="text-xs text-gray-500">({product.reviewsCount})</span>
+                </div>
+                <div className="w-px h-4 bg-gray-200" />
+                <span className="text-xs font-bold text-green-600 uppercase">{product.stockStatus.replace('-', ' ')}</span>
               </div>
 
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-1.5 text-accent">
-                  <Star className="w-5 h-5 fill-accent" />
-                  <span className="text-lg font-black">{product.rating}</span>
-                  <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest ml-1">{product.reviewsCount} Reviews</span>
-                </div>
-                <div className="w-px h-6 bg-border/40" />
-                <div className="flex items-center gap-2 text-success">
-                  <div className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-widest italic">{product.stockStatus.replace('-', ' ')}</span>
-                </div>
-              </div>
-
-              <div className="flex items-baseline gap-4">
-                <span className="text-6xl font-black tracking-tighter uppercase">{product.price.toLocaleString()} <span className="text-2xl">MAD</span></span>
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold">${product.price.toLocaleString()}</span>
                 {product.oldPrice && (
-                  <span className="text-2xl text-muted-foreground line-through font-bold italic opacity-30">{product.oldPrice.toLocaleString()} MAD</span>
+                  <span className="text-lg text-gray-400 line-through">${product.oldPrice.toLocaleString()}</span>
                 )}
               </div>
 
-              <p className="text-muted-foreground text-sm uppercase font-black leading-relaxed tracking-tight border-l-8 border-accent pl-8 bg-gray-50/50 py-6 rounded-r-3xl">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {product.description}
               </p>
             </div>
 
-            <div className="py-10 space-y-12">
+            <div className="py-6 space-y-6">
               <AddToCartButton product={product as any} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Truck, title: "Free Express Shipping", text: "Across Morocco Central" },
-                  { icon: ShieldCheck, title: "Certified Authentic", text: "Distributor guarantee" },
-                  { icon: RefreshCcw, title: "7-Day Inspection", text: "Risk-free evaluation" },
-                  { icon: Info, title: "Pay on Delivery", text: "Cash or Card processing" }
+                  { icon: Truck, title: "Free Shipping", text: "Across Morocco" },
+                  { icon: ShieldCheck, title: "Authentic", text: "Distributor guarantee" },
+                  { icon: RefreshCcw, title: "7-Day Return", text: "Risk-free" },
+                  { icon: Info, title: "COD", text: "Cash or Card" }
                 ].map((trust, i) => (
-                  <div key={i} className="flex gap-4 p-5 bg-white border border-border/40 rounded-3xl group hover:shadow-xl transition-all hover:-translate-y-1">
-                    <trust.icon className="w-7 h-7 text-accent shrink-0 transition-transform group-hover:rotate-12" />
+                  <div key={i} className="flex gap-3 p-3 bg-gray-50 rounded-xl">
+                    <trust.icon className="w-5 h-5 text-accent shrink-0" />
                     <div>
-                      <p className="text-[11px] font-black uppercase tracking-widest">{trust.title}</p>
-                      <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight opacity-70 leading-tight">{trust.text}</p>
+                      <p className="text-xs font-bold">{trust.title}</p>
+                      <p className="text-[10px] text-gray-500">{trust.text}</p>
                     </div>
                   </div>
                 ))}
@@ -106,7 +91,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
           </div>
         </div>
 
-        <div className="mt-40">
+        <div className="mt-16">
           <ProductReviews product={product as any} />
         </div>
       </Container>

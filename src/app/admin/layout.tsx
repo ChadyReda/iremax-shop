@@ -1,26 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
-  Package,
-  Settings,
-  ShoppingCart,
-  Users,
   LayoutDashboard,
+  Package,
+  ShoppingCart,
   LogOut,
-  ChevronRight,
   Boxes,
   Layers,
-  Search
+  Menu,
+  X,
+  ChevronLeft
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { signOut, useSession } from "next-auth/react";
-
-
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const sidebarItems = [
   { name: "Overview", icon: LayoutDashboard, href: "/admin" },
@@ -30,102 +27,190 @@ const sidebarItems = [
   { name: "Orders", icon: ShoppingCart, href: "/admin/orders" },
 ];
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-
-  const SidebarContent = () => (
-    <>
-        <div className="flex items-center gap-3 px-2 mb-10">
-          <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center font-black text-xl italic text-white shadow-xl shadow-accent/20">S</div>
-          <div>
-            <h1 className="text-xl font-black uppercase tracking-tighter leading-none italic">Admin Panel</h1>
-            <p className="text-[10px] uppercase font-black tracking-widest text-accent mt-0.5">Control Center v1.0</p>
-          </div>
-        </div>
-
-        <nav className="flex-grow space-y-1.5">
-          {sidebarItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.name} href={item.href}>
-                <div className={cn(
-                  "flex items-center justify-between px-4 py-3.5 rounded-xl transition-all group",
-                  isActive
-                    ? "bg-accent text-white shadow-lg shadow-accent/20"
-                    : "text-white/60 hover:text-white hover:bg-white/10"
-                )}>
-                  <div className="flex items-center gap-3">
-                    <item.icon className={cn("w-5 h-5 transition-transform", !isActive && "group-hover:scale-110")} />
-                    <span className="text-sm font-bold uppercase tracking-widest">{item.name}</span>
-                  </div>
-                  {isActive && <ChevronRight className="w-4 h-4" />}
-                </div>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto space-y-4">
-          <Separator className="bg-white/10" />
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
-            <div className="w-8 h-8 rounded-lg bg-gray-600 overflow-hidden" />
-            <div className="flex-grow">
-              <p className="text-xs font-black uppercase tracking-widest truncate leading-tight">Admin User</p>
-              <p className="text-[10px] text-white/50 font-medium truncate">reda@saymonshop.com</p>
-            </div>
-            <button className="text-white/40 hover:text-accent transition-colors" onClick={() => {
-              signOut({ callbackUrl: "/" });
-            }}>
-              <LogOut className="w-4 h-4" />
-            </button>
-
-          </div>
-          <p className="text-[8px] uppercase font-black tracking-widest text-center text-white/20">
-            Saymon Shop Pro Management
-          </p>
-        </div>
-    </>
-  );
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50">
-      {/* Desktop Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-72 bg-black text-white hidden lg:flex flex-col p-6 z-50">
-        <SidebarContent />
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-grow lg:pl-72 flex flex-col min-w-0">
-        {/* Top bar */}
-        <header className="h-20 bg-white border-b border-border/50 sticky top-0 z-40 px-6 lg:px-10 flex items-center justify-between lg:justify-end">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-black hover:bg-gray-100">
-                <Menu className="w-6 h-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] p-6 bg-black text-white border-r-gray-800 flex flex-col h-full">
-              <SidebarContent />
-            </SheetContent>
-          </Sheet>
-
-          <div className="flex items-center gap-4">
-            <Button className="h-10 bg-black hover:bg-black/90 text-white rounded-lg font-black uppercase text-[10px] tracking-widest px-6" onClick={() => {
-              signOut({ callbackUrl: "/" });
-            }}>
-              Logout
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white border-b px-4 h-16 flex items-center justify-between">
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-5 w-5" />
             </Button>
-          </div>
-        </header>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 p-0">
+            <SidebarContent
+              items={sidebarItems}
+              pathname={pathname}
+              session={session}
+              isCollapsed={false}
+              onClose={() => setSidebarOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
+        <h1 className="font-semibold">Admin Panel</h1>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
+      </div>
 
-        <div className="p-4 sm:p-6 lg:p-10 overflow-x-auto">
-          {children}
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex">
+        {/* Sidebar */}
+        <aside className={cn(
+          "fixed left-0 top-0 h-screen bg-white border-r transition-all duration-300 flex flex-col",
+          collapsed ? "w-20" : "w-64"
+        )}>
+          {/* Collapse Button */}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="absolute -right-3 top-6 bg-white border rounded-full p-1 shadow-md hover:bg-gray-50 z-10"
+          >
+            <ChevronLeft className={cn(
+              "h-4 w-4 transition-transform",
+              collapsed && "rotate-180"
+            )} />
+          </button>
+
+          <SidebarContent
+            items={sidebarItems}
+            pathname={pathname}
+            session={session}
+            isCollapsed={collapsed}
+          />
+        </aside>
+
+        {/* Main Content */}
+        <main className={cn(
+          "flex-1 min-h-screen transition-all duration-300",
+          collapsed ? "ml-20" : "ml-64"
+        )}>
+          <div className="p-6">
+            {children}
+          </div>
+        </main>
+      </div>
+
+      {/* Mobile Content */}
+      <div className="lg:hidden p-4">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Separate Sidebar Content Component
+function SidebarContent({
+  items,
+  pathname,
+  session,
+  isCollapsed,
+  onClose
+}: {
+  items: any[],
+  pathname: string,
+  session: any,
+  isCollapsed: boolean,
+  onClose?: () => void
+}) {
+  return (
+    <div className="flex flex-col h-full">
+      {/* Logo Area */}
+      <div className={cn(
+        "h-16 border-b flex items-center",
+        isCollapsed ? "justify-center" : "px-6"
+      )}>
+        <div className={cn(
+          "bg-black text-white font-bold rounded-lg flex items-center justify-center",
+          isCollapsed ? "w-8 h-8 text-lg" : "w-10 h-10 text-xl"
+        )}>
+          S
         </div>
-      </main>
+        {!isCollapsed && (
+          <span className="ml-3 font-semibold text-lg">Admin Panel</span>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 py-6 space-y-1">
+        {items.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={onClose}
+              className={cn(
+                "flex items-center mx-3 px-3 py-2 rounded-lg transition-colors",
+                isCollapsed ? "justify-center" : "justify-start",
+                isActive
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <item.icon className={cn("h-5 w-5", isCollapsed ? "" : "mr-3")} />
+              {!isCollapsed && <span className="text-sm font-medium">{item.name}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* User Section */}
+      <div className="border-t p-4">
+        <div className={cn(
+          "flex items-center",
+          isCollapsed ? "justify-center" : "justify-between"
+        )}>
+          <div className={cn("flex items-center", isCollapsed ? "" : "space-x-3")}>
+            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-gray-600">
+                {session?.user?.name?.[0]?.toUpperCase() || "A"}
+              </span>
+            </div>
+            {!isCollapsed && (
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">
+                  {session?.user?.name || "Admin User"}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {session?.user?.email || "admin@example.com"}
+                </p>
+              </div>
+            )}
+          </div>
+          {!isCollapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="text-gray-500 hover:text-red-600"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        {isCollapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="mt-3 w-full text-gray-500 hover:text-red-600"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

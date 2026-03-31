@@ -37,7 +37,7 @@ export function AddToCartButton({ product }: { product: any }) {
           if (isWishlisted) {
             removeWishlist(product.id);
           } else {
-            addWishlist(product);
+            addWishlist(product.id);
           }
         }}
         className={cn(

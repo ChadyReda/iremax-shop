@@ -10,7 +10,8 @@ import {
   XSquare, 
   ChevronRight,
   TrendingDown,
-  Users
+  Users,
+  ArrowRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,75 +37,79 @@ export default async function AdminDashboard() {
      canceled: orders.filter(o => o.status?.toUpperCase() === 'CANCELLED' || o.status?.toUpperCase() === 'CANCELED').length,
   };
 
+  const recentProducts = products.slice(0, 5);
+
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-5xl font-black uppercase tracking-tighter italic">Dashboard</h1>
-        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Store performance overview since launch</p>
+        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter italic">Dashboard</h1>
+        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Store performance</p>
       </div>
 
-      {/* Hero Stats */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      {/* Hero Stats - Responsive Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {stats.map((stat) => (
-          <Card key={stat.title} className="group border-none shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-2 bg-white">
+          <Card key={stat.title} className="group border-none shadow-sm hover:shadow-md hover:-translate-y-1 transition-all rounded-2xl p-3 sm:p-4 bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-               <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.title}</CardTitle>
-               <div className={cn("p-2.5 rounded-xl transition-transform group-hover:rotate-12", stat.bg, stat.color)}>
-                 <stat.icon className="w-5 h-5" />
+               <CardTitle className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.title}</CardTitle>
+               <div className={cn("p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl transition-transform group-hover:rotate-12", stat.bg, stat.color)}>
+                 <stat.icon className="w-3 h-3 sm:w-5 sm:h-5" />
                </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-black tracking-tighter uppercase">{stat.value}</div>
+              <div className="text-xl sm:text-3xl font-black tracking-tighter uppercase truncate">{stat.value}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Status Breakdown Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
+        {/* Status Breakdown */}
         <div className="lg:col-span-1 space-y-6 flex flex-col h-full">
-           <Card className="border-none shadow-sm rounded-3xl bg-white flex-grow">
+           <Card className="border-none shadow-sm rounded-2xl sm:rounded-3xl bg-white flex-grow">
               <CardHeader>
                 <CardTitle className="text-xs font-black uppercase tracking-widest">Order Status</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 sm:space-y-6">
                  {[
-                   { label: "Pending Fulfillment", count: statusStats.pending, icon: Clock, color: "text-amber-500", bg: "bg-amber-50" },
-                   { label: "Successfully Delivered", count: statusStats.delivered, icon: CheckCircle2, color: "text-success", bg: "bg-success/5" },
-                   { label: "Canceled Orders", count: statusStats.canceled, icon: XSquare, color: "text-destructive", bg: "bg-destructive/5" },
+                   { label: "Pending", count: statusStats.pending, icon: Clock, color: "text-amber-500", bg: "bg-amber-50" },
+                   { label: "Delivered", count: statusStats.delivered, icon: CheckCircle2, color: "text-success", bg: "bg-success/5" },
+                   { label: "Canceled", count: statusStats.canceled, icon: XSquare, color: "text-destructive", bg: "bg-destructive/5" },
                  ].map((s) => (
-                   <div key={s.label} className="flex items-center gap-4">
-                      <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0", s.bg, s.color)}>
-                         <s.icon className="w-6 h-6" />
+                   <div key={s.label} className="flex items-center gap-3 sm:gap-4">
+                      <div className={cn("w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0", s.bg, s.color)}>
+                         <s.icon className="w-4 h-4 sm:w-6 sm:h-6" />
                       </div>
                       <div className="flex-grow">
-                         <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">{s.label}</p>
-                         <h4 className="text-2xl font-black tracking-tighter uppercase">{s.count}</h4>
+                         <p className="text-[8px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground">{s.label}</p>
+                         <h4 className="text-xl sm:text-2xl font-black tracking-tighter uppercase">{s.count}</h4>
                       </div>
                    </div>
                  ))}
-                 
               </CardContent>
            </Card>
         </div>
 
         {/* Recent Orders Table */}
         <div className="lg:col-span-2 space-y-6">
-           <Card className="border-none shadow-sm rounded-3xl bg-white h-full">
+           <Card className="border-none shadow-sm rounded-2xl sm:rounded-3xl bg-white h-full">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xs font-black uppercase tracking-widest">Recent Activity</CardTitle>
+                <CardTitle className="text-xs font-black uppercase tracking-widest">Recent Orders</CardTitle>
                 <Link href="/admin/orders">
-                  <Button variant="ghost" className="text-[10px] uppercase font-black tracking-widest hover:text-accent transition-colors">See all</Button>
+                  <Button variant="ghost" size="sm" className="text-[10px] uppercase font-black tracking-widest hover:text-accent transition-colors gap-1">
+                    See all <ArrowRight className="w-3 h-3" />
+                  </Button>
                 </Link>
               </CardHeader>
               <CardContent>
+                 <div className="overflow-x-auto">
                  <Table>
                     <TableHeader className="bg-gray-50/50">
                        <TableRow className="border-none">
-                          <TableHead className="text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Order ID</TableHead>
-                          <TableHead className="text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Customer</TableHead>
-                          <TableHead className="text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Status</TableHead>
-                          <TableHead className="text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10 text-right">Amount</TableHead>
+                          <TableHead className="text-[8px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Order</TableHead>
+                          <TableHead className="text-[8px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Customer</TableHead>
+                          <TableHead className="text-[8px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10">Status</TableHead>
+                          <TableHead className="text-[8px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground h-10 text-right">Amount</TableHead>
                        </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -113,17 +118,17 @@ export default async function AdminDashboard() {
                             <TableCell className="font-bold text-xs">#{order.id.slice(-6).toUpperCase()}</TableCell>
                             <TableCell>
                                <div className="space-y-0.5">
-                                  <p className="font-black text-xs uppercase tracking-tight">{order.customerName}</p>
+                                  <p className="font-black text-xs uppercase tracking-tight truncate max-w-[120px]">{order.customerName}</p>
                                   <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-widest">{order.customerPhone}</p>
                                </div>
                             </TableCell>
                             <TableCell>
                                <Badge className={cn(
-                                 "rounded-lg border-none font-bold text-[9px] h-6 uppercase px-2 shadow-sm animate-in zoom-in duration-300",
-                                 order.status === 'delivered' ? "bg-success text-white" : 
-                                 order.status === 'pending' ? "bg-amber-500 text-white" : "bg-destructive text-white"
+                                 "rounded-lg border-none font-bold text-[8px] sm:text-[9px] h-5 sm:h-6 uppercase px-1.5 sm:px-2 shadow-sm",
+                                 order.status?.toUpperCase() === 'DELIVERED' ? "bg-success text-white" : 
+                                 order.status?.toUpperCase() === 'CANCELLED' || order.status?.toUpperCase() === 'CANCELED' ? "bg-destructive text-white" : "bg-amber-500 text-white"
                                )}>
-                                 {order.status}
+                                 {order.status || 'PENDING'}
                                </Badge>
                             </TableCell>
                             <TableCell className="text-right font-black text-sm tracking-tighter">
@@ -133,13 +138,42 @@ export default async function AdminDashboard() {
                        ))}
                        {orders.length === 0 && (
                          <TableRow>
-                            <TableCell colSpan={4} className="h-40 text-center text-xs font-black uppercase tracking-widest text-muted-foreground italic">
-                               No orders logged yet. Start capturing details!
+                            <TableCell colSpan={4} className="h-20 sm:h-40 text-center text-xs font-black uppercase tracking-widest text-muted-foreground">
+                               No orders yet
                             </TableCell>
                          </TableRow>
                        )}
                     </TableBody>
                  </Table>
+                 </div>
+              </CardContent>
+           </Card>
+           
+           {/* Recent Products */}
+           <Card className="border-none shadow-sm rounded-2xl sm:rounded-3xl bg-white">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-black uppercase tracking-widest">Recent Products</CardTitle>
+                <Link href="/admin/products">
+                  <Button variant="ghost" size="sm" className="text-[10px] uppercase font-black tracking-widest hover:text-accent transition-colors gap-1">
+                    Manage <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                 <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
+                    {recentProducts.map((product) => (
+                      <Link key={product.id} href={`/product/${product.slug}`} target="_blank" className="shrink-0">
+                         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gray-100 border border-border/40 shadow-sm hover:scale-105 transition-transform">
+                            <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                         </div>
+                         <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-tight mt-2 truncate max-w-[90px]">{product.title}</p>
+                         <p className="text-[8px] sm:text-[9px] text-muted-foreground font-bold">{product.price.toLocaleString()} MAD</p>
+                      </Link>
+                    ))}
+                    {recentProducts.length === 0 && (
+                      <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">No products yet</p>
+                    )}
+                 </div>
               </CardContent>
            </Card>
         </div>

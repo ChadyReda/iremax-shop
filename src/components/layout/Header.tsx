@@ -93,26 +93,22 @@ export function Header() {
           </Link>
 
           <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList className="gap-2">
+            <NavigationMenuList className="gap-1">
               {navItems.map((item) => (
                 <NavigationMenuItem key={item.title}>
-                  <NavigationMenuTrigger className="bg-transparent h-10 px-4 font-black uppercase tracking-widest text-[12px] hover:text-accent data-[state=open]:text-accent transition-colors">
+                  <NavigationMenuTrigger className="bg-transparent h-9 px-3 font-bold uppercase text-xs">
                     {item.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-6 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-white rounded-xl shadow-2xl">
-                      <li className="row-span-3">
+                    <ul className="grid w-[350px] gap-2 p-4 bg-white rounded-xl shadow-lg">
+                      <li>
                         <NavigationMenuLink asChild>
                           <Link
                             href={`/category/${item.slug}`}
-                            className="flex h-full w-full select-none flex-col justify-end rounded-lg bg-gradient-to-tr from-black to-gray-800 p-6 no-underline outline-none focus:shadow-md transition-all hover:scale-[1.02]"
+                            className="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                           >
-                            <div className="mb-2 mt-4 text-xl font-black text-white uppercase tracking-tighter">
-                              All {item.title}
-                            </div>
-                            <p className="text-sm leading-tight text-white/70 font-medium">
-                              Explore our full premium collection of Professional {item.title}.
-                            </p>
+                            <div className="text-sm font-bold uppercase">All {item.title}</div>
+                            <p className="text-xs text-muted-foreground">Explore full collection</p>
                           </Link>
                         </NavigationMenuLink>
                       </li>
@@ -121,12 +117,9 @@ export function Header() {
                           <NavigationMenuLink asChild>
                             <Link
                               href={sub.href}
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-50 hover:text-accent font-bold"
+                              className="block p-2 rounded-md hover:bg-gray-50 transition-colors"
                             >
-                              <div className="text-sm uppercase tracking-widest leading-none font-black">{sub.name}</div>
-                              <p className="line-clamp-2 text-[10px] leading-snug text-muted-foreground uppercase tracking-tight">
-                                {sub.desc}
-                              </p>
+                              <div className="text-xs font-bold uppercase">{sub.name}</div>
                             </Link>
                           </NavigationMenuLink>
                         </li>
@@ -137,7 +130,7 @@ export function Header() {
               ))}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/deals" className={cn(navigationMenuTriggerStyle(), "bg-transparent h-10 px-4 font-black uppercase tracking-widest text-[12px] text-accent hover:text-accent/80 transition-colors")} passHref>
+                  <Link href="/deals" className={cn(navigationMenuTriggerStyle(), "bg-transparent h-9 px-3 font-bold uppercase text-xs text-accent")} passHref>
                     Deals
                   </Link>
                 </NavigationMenuLink>
@@ -202,39 +195,35 @@ export function Header() {
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-white p-6 md:p-10 overflow-y-auto border-l border-border">
-                <SheetHeader className="mb-10 text-left border-b pb-4">
-                  <SheetTitle className="font-black uppercase tracking-tighter text-2xl flex items-center gap-2">
-                    <Image src="/iRemax.png" alt="Logo" width={80} height={80} className="scale-110 object-contain" />
+              <SheetContent side="right" className="w-[300px] bg-white p-6 overflow-y-auto border-l">
+                <SheetHeader className="mb-6">
+                  <SheetTitle className="font-black uppercase text-xl">
+                    Menu
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-4">
                   {navItems.map((item) => (
-                    <div key={item.title} className="flex flex-col gap-4">
-                      <h4 className="font-black uppercase tracking-widest text-[11px] text-accent bg-accent/5 px-3 py-1.5 rounded-md inline-block w-fit">{item.title}</h4>
-                      <div className="flex flex-col gap-3 pl-1">
-                        <Link href={`/category/${item.slug}`} className="text-base font-bold uppercase tracking-tight hover:text-accent transition-colors">
-                          All {item.title}
-                        </Link>
+                    <div key={item.title} className="border-b pb-4">
+                      <Link href={`/category/${item.slug}`} className="font-bold uppercase text-sm hover:text-accent transition-colors">
+                        {item.title}
+                      </Link>
+                      <div className="mt-2 pl-2 flex flex-col gap-2">
                         {item.subs.map((sub) => (
-                          <Link key={sub.name} href={sub.href} className="text-sm text-muted-foreground font-semibold hover:text-black transition-colors p-2 -ml-2 rounded-lg hover:bg-gray-50 flex flex-col gap-0.5">
-                            <span className="uppercase tracking-widest text-[10px] text-black/80">{sub.name}</span>
-                            <span className="text-[9px] uppercase tracking-tighter opacity-70">{sub.desc}</span>
+                          <Link key={sub.name} href={sub.href} className="text-xs text-muted-foreground hover:text-black transition-colors">
+                            {sub.name}
                           </Link>
                         ))}
                       </div>
                     </div>
                   ))}
-                  <div className="flex flex-col gap-4 mt-8 pt-8 border-t border-border/50">
-                    <Link href="/deals" className="flex items-center gap-2 font-black uppercase tracking-widest text-sm text-accent hover:bg-accent/5 p-3 rounded-lg transition-all">
-                      Special Deals
+                  <Link href="/deals" className="font-bold uppercase text-sm text-accent">
+                    Special Deals
+                  </Link>
+                  {session?.user?.role === "admin" && (
+                    <Link href="/admin" className="font-bold uppercase text-sm">
+                      Admin
                     </Link>
-                    {session?.user?.role === "admin" && (
-                      <Link href="/admin" className="flex items-center gap-2 font-black uppercase tracking-widest text-sm text-black hover:bg-black hover:text-white p-3 rounded-lg transition-all">
-                        Admin Control Center
-                      </Link>
-                    )}
-                  </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

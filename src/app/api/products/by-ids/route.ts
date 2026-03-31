@@ -3,6 +3,15 @@ import { getProductsByIds } from "@/lib/actions/product";
 
 export async function POST(req: NextRequest) {
     try {
+        // Check for empty body first
+        const contentLength = req.headers.get("content-length");
+        if (!contentLength || contentLength === "0") {
+            return NextResponse.json(
+                { error: "Empty request body" },
+                { status: 400 }
+            );
+        }
+        
         const body = await req.json();
         const { ids } = body;
 

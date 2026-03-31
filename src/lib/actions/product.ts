@@ -106,12 +106,15 @@ export async function getProducts(options: {
 
   if (categoryId) query = query.eq('categoryId', categoryId);
   if (collectionSlug) {
-    // Standard supabase join filter: `category(slug).eq('slug_val')` 
-    // Wait, the column names should match the database. 
-    // Supposing standard snake_case or whatever Prisma used. 
-    // Prisma used PascalCase model names, but usually table names are matched.
-    // Let's assume table names match Prisma model names if not otherwise specified.
-    query = query.filter('collection.slug', 'eq', collectionSlug);
+    const { data: collectionData } = await supabase
+      .from('Collection')
+      .select('id')
+      .eq('slug', collectionSlug)
+      .single();
+    
+    if (collectionData) {
+      query = query.eq('collectionId', collectionData.id);
+    }
   }
   if (search) {
     query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
