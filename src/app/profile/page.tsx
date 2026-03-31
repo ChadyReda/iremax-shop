@@ -1,3 +1,5 @@
+
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -5,13 +7,15 @@ import { Container } from "@/components/layout/Container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Mail, Shield, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-
+import { LogoutButton } from "./logoutButton";
+import { CardFooter } from "@/components/ui/card";
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/login");
   }
+
 
   // Fetch full user data from Supabase
   const { data: userData } = await supabase
@@ -44,9 +48,12 @@ export default async function ProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-8 text-center">
-               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest italic mb-2">Member Since</p>
-               <p className="text-sm font-black">{new Date(userData?.createdAt).toLocaleDateString()}</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest italic mb-2">Member Since</p>
+              <p className="text-sm font-black">{new Date(userData?.createdAt).toLocaleDateString()}</p>
             </CardContent>
+            <CardFooter>
+              <LogoutButton />
+            </CardFooter>
           </Card>
 
           <Card className="md:col-span-2 border-none shadow-2xl rounded-3xl overflow-hidden bg-white">
@@ -88,12 +95,12 @@ export default async function ProfilePage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="pt-6">
-                 {/* TODO: Add edit form here if needed, but for now just showing info as per step 1 */}
-                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
-                   Information management is currently restricted to viewing only.
-                 </p>
+                {/* TODO: Add edit form here if needed, but for now just showing info as per step 1 */}
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
+                  Information management is currently restricted to viewing only.
+                </p>
               </div>
             </CardContent>
           </Card>

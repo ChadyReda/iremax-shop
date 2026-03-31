@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/layout/Container";
 import { User, Activity, AlertCircle, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 
 
 function LoginPage() {
@@ -56,7 +57,7 @@ function LoginPage() {
         <CardHeader className="space-y-4 pt-10 px-8">
           <div className="flex justify-center">
             <h1 className="text-3xl font-black tracking-tighter uppercase italic">
-              SAYMON<span className="text-accent">SHOP</span>
+              <Image src="/iRemax.png" alt="Logo" width={100} height={100} className="scale-[1.2]" />
             </h1>
           </div>
           <div className="text-center space-y-1">

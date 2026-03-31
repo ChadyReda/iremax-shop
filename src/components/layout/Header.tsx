@@ -34,9 +34,9 @@ export function Header() {
   const router = useRouter();
   const { data: session } = useSession() as { data: any };
   const [isScrolled, setIsScrolled] = useState(false);
-
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const totalItems = useCartStore((state) => state.items.reduce((acc, item) => acc + item.quantity, 0));
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -44,6 +44,10 @@ export function Header() {
       router.push(`/category/all?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
     }
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   useEffect(() => {
@@ -150,36 +154,41 @@ export function Header() {
             />
           </div>
 
-          {/* User Icons */}
+          {/* User Icons - Desktop */}
           <div className="flex items-center gap-2 sm:gap-4">
+            {/* Admin Dashboard - Only show when logged in as admin */}
             {session && session.user?.role === "admin" && (
-              <>
-                <Link href="/admin">
-                  <Button variant="ghost" size="icon" title="Admin Dashboard" className="hidden sm:inline-flex hover:bg-muted text-accent">
-                    <LayoutDashboard className="w-5 h-5" />
-                  </Button>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    signOut({ callbackUrl: "/" });
-                  }}
-                  className="hidden sm:inline-flex hover:bg-muted text-destructive"
-                  title="Logout"
-                >
-                  <LogOut className="w-5 h-5" />
+              <Link href="/admin">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex hover:bg-muted" title="Admin Dashboard">
+                  <LayoutDashboard className="w-5 h-5" />
                 </Button>
-              </>
+              </Link>
             )}
-            <Link href="/wishlist">
 
+            {/* Wishlist - Always visible */}
+            <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="hidden sm:inline-flex hover:bg-muted group">
                 <Heart className="w-5 h-5 group-hover:fill-accent group-hover:text-accent" />
               </Button>
             </Link>
-            <CartDrawer>
 
+            {/* Profile/Login - Same logic as mobile */}
+            {session ? (
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex hover:bg-muted">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex hover:bg-muted">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
+
+            {/* Cart */}
+            <CartDrawer>
               <Button variant="ghost" size="icon" className="hover:bg-muted relative">
                 <ShoppingCart className="w-5 h-5" />
                 {mounted && totalItems > 0 && (
@@ -189,7 +198,9 @@ export function Header() {
                 )}
               </Button>
             </CartDrawer>
-            <Sheet>
+
+            {/* Mobile Menu */}
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="lg:hidden hover:bg-muted">
                   <Menu className="w-6 h-6" />
@@ -202,28 +213,90 @@ export function Header() {
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4">
+                  {/* Navigation Items */}
                   {navItems.map((item) => (
                     <div key={item.title} className="border-b pb-4">
-                      <Link href={`/category/${item.slug}`} className="font-bold uppercase text-sm hover:text-accent transition-colors">
+                      <Link
+                        href={`/category/${item.slug}`}
+                        className="font-bold uppercase text-sm hover:text-accent transition-colors block"
+                        onClick={closeMobileMenu}
+                      >
                         {item.title}
                       </Link>
                       <div className="mt-2 pl-2 flex flex-col gap-2">
                         {item.subs.map((sub) => (
-                          <Link key={sub.name} href={sub.href} className="text-xs text-muted-foreground hover:text-black transition-colors">
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            className="text-xs text-muted-foreground hover:text-black transition-colors"
+                            onClick={closeMobileMenu}
+                          >
                             {sub.name}
                           </Link>
                         ))}
                       </div>
                     </div>
                   ))}
-                  <Link href="/deals" className="font-bold uppercase text-sm text-accent">
+
+                  <Link
+                    href="/deals"
+                    className="font-bold uppercase text-sm text-accent"
+                    onClick={closeMobileMenu}
+                  >
                     Special Deals
                   </Link>
-                  {session?.user?.role === "admin" && (
-                    <Link href="/admin" className="font-bold uppercase text-sm">
-                      Admin
+
+                  {/* Admin Dashboard - Only for admins */}
+                  {session && session.user?.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      className="font-bold uppercase text-sm"
+                      onClick={closeMobileMenu}
+                    >
+                      Admin Dashboard
                     </Link>
                   )}
+
+                  {/* Wishlist in Mobile Menu */}
+                  <Link
+                    href="/wishlist"
+                    className="font-bold uppercase text-sm"
+                    onClick={closeMobileMenu}
+                  >
+                    Wishlist
+                  </Link>
+
+                  {/* Profile/Login in Mobile Menu */}
+                  <div className="border-t pt-4 mt-2">
+                    {session ? (
+                      <>
+                        <Link
+                          href="/profile"
+                          className="font-bold uppercase text-sm block py-2"
+                          onClick={closeMobileMenu}
+                        >
+                          My Profile
+                        </Link>
+                        <button
+                          onClick={() => {
+                            signOut({ callbackUrl: "/" });
+                            closeMobileMenu();
+                          }}
+                          className="font-bold uppercase text-sm text-red-600 block py-2 w-full text-left"
+                        >
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="font-bold uppercase text-sm block py-2"
+                        onClick={closeMobileMenu}
+                      >
+                        Login
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
